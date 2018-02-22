@@ -6,6 +6,7 @@ import numpy as np
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Flatten, Dense, Conv2D, MaxPooling2D, GlobalMaxPooling2D
 from tensorflow.python.keras.optimizers import SGD
+from tensorflow.python.keras.losses import mean_squared_error
 from tensorflow.python.keras.regularizers import l2
 from tensorflow.python.keras.applications import VGG16
 from tensorflow.python.keras import backend as K
@@ -73,9 +74,8 @@ class SSDKeras(object):
 				include_top=False,
 				input_shape=(self.img_height, self.img_width, self.input_channels)
 				)
-
-		conv_base.summary()	
-
+		conv_base.summary()
+	
 		net = Sequential()
 		net.add(conv_base)
 		
@@ -83,16 +83,26 @@ class SSDKeras(object):
 		net.add(GlobalMaxPooling2D())
 		
 		net.add(Flatten())
+		net.add(Dense(256, activation='relu'))
 		net.add(Dense(self.output_dimension))
 
 		""" Putting the VGG Net weigths fixed """
-		conv_base.trainable = False
+		conv_base.trainable = True
+
+		set_trainable = False
+		for layer in conv_base.layers:
+			if layer.name == 'block5_conv1':
+				set_trainable = True
+			if set_trainable:
+				layer.trainable = True
+			else:
+				layer.trainable = False
 
 		net.summary()
 
 		net.compile(
 			optimizer=SGD(lr=self.learning_rate, decay=self.learning_rate_decay),
-			loss=SSDKeras.root_mean_squared_error, 
+			loss=mean_squared_error, 
 			metrics=['mae'])
 
 		return net

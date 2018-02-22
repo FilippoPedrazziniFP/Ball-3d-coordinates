@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import glob
 import progressbar
 import random
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -29,11 +30,11 @@ class Preprocessing(object):
 	@staticmethod
 	def get_features(number_of_samples, img_height, img_width, input_channels):
 		""" Load images """
-		images_list = glob.glob(_DATA_PATH + '*.png')
+		images_list = sorted(glob.glob(_DATA_PATH + '*.png'))
 		features = []
 		for file_image in bar(images_list[0:number_of_samples]):
 			img = imread(file_image)
-			img = resize(img, (img_height, img_width), mode='constant', preserve_range=True)
+			# img = resize(img, (img_height, img_width), mode='constant', preserve_range=True)
 			features.append(img)
 		return np.asarray(features)
 
@@ -42,18 +43,18 @@ class Preprocessing(object):
 		features = pd.read_csv(_DATA_PATH + _METADATA_PATH, header = None, sep=',')
 		features.columns = ["frame_index", "x", "y", "z", "relative_x", "relative_y", "size", "traj"]
 		labels = features[["relative_x", "relative_y"]]
+		print(labels.values[0])
 		""" Standardize features """
 		labels['relative_x'] = labels['relative_x'].apply(lambda x: x / img_width)
 		labels['relative_y'] = labels['relative_y'].apply(lambda x: x / img_height)
 		# labels['size'] = labels['size'].apply(lambda x: x / img_height)
-
-		print(labels.values[0])
 		return labels.values[0:number_of_samples]
 
 	@staticmethod
 	def get_data(number_of_samples, img_height, img_width, input_channels):
 		""" The method accesses the data directory and loads images and labels """
 		features = Preprocessing.get_features(number_of_samples, img_height, img_width, input_channels)
+		cv2.imwrite('image_1.png', features[0])
 		labels = Preprocessing.get_labels(number_of_samples, img_height, img_width, input_channels)
 		return features, labels
 
@@ -97,9 +98,9 @@ class Preprocessing(object):
 			)
 		
 		""" Look at what is happening in the generator """
-		for x, y in train_generator:
+		"""for x, y in train_generator:
 			plt.imshow(x[0])
-			break
+			break"""
 
 		return train_generator, validation_generator, test_generator
 
