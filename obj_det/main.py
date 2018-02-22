@@ -21,7 +21,8 @@ parser = argparse.ArgumentParser()
 
 """ General Parameters """
 parser.add_argument('--model_path', type=str, default='./model/ssd_vgg_fixed', help='model checkpoints directory.')
-parser.add_argument('--restore', type=bool, default=True, help='if True restore the model from --model_path.')
+parser.add_argument('--restore', type=bool, default=False, help='if True restore the model from --model_path.')
+parser.add_argument('--fine_tuning', type=bool, default=True, help='if True unlocks some layers for tuning.')
 parser.add_argument('--test', type=bool, default=False, help='if True it skips the training process and goes directly to test.')
 parser.add_argument('--log_dir', type=str, default='./tensorbaord', help='directory where to store tensorbaord values.')
 
@@ -40,7 +41,7 @@ _IMG_HEIGHT = 814
 _IMG_WIDTH = 1360
 _INPUT_CHANNELS = 3
 
-def train_test_model(train_generator, validation_generator, test_generator ):
+def train_test_model(train_generator, validation_generator, test_generator):
 
     checkpointer = ModelCheckpoint(filepath=FLAGS.model_path + '.h5', monitor='val_loss', verbose=1, save_best_only=True, period=10)
     early_stopping = EarlyStopping(monitor='val_loss', min_delta=10, patience=1000)
@@ -61,6 +62,20 @@ def train_test_model(train_generator, validation_generator, test_generator ):
         print("Loaded model from disk")
     
     if FLAGS.test != True:
+        history = net.fit_generator(
+            train_generator,
+            epochs=FLAGS.epochs,
+            validation_data=validation_generator,
+            verbose=1,
+            steps_per_epoch=5,
+            validation_steps=1,
+            callbacks=[tensorbaord, checkpointer, early_stopping]
+            )
+
+    """ Second training for fine tuning """
+    if FLAGS.fine_tuning == True:
+        net = model.fine_tuning(net)
+
         history = net.fit_generator(
             train_generator,
             epochs=FLAGS.epochs,

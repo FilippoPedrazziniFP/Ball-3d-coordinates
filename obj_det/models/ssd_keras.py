@@ -69,15 +69,15 @@ class SSDKeras(object):
 
 	def build_vgg_net(self):
 
-		conv_base = VGG16(
+		self.conv_base = VGG16(
 				weights='imagenet',
 				include_top=False,
 				input_shape=(self.img_height, self.img_width, self.input_channels)
 				)
-		conv_base.summary()
+		self.conv_base.summary()
 	
 		net = Sequential()
-		net.add(conv_base)
+		net.add(self.conv_base)
 		
 		""" Shrinking the shape to one """
 		net.add(GlobalMaxPooling2D())
@@ -87,16 +87,7 @@ class SSDKeras(object):
 		net.add(Dense(self.output_dimension))
 
 		""" Putting the VGG Net weigths fixed """
-		conv_base.trainable = True
-
-		set_trainable = False
-		for layer in conv_base.layers:
-			if layer.name == 'block5_conv1':
-				set_trainable = True
-			if set_trainable:
-				layer.trainable = True
-			else:
-				layer.trainable = False
+		self.conv_base.trainable = False
 
 		net.summary()
 
@@ -107,6 +98,29 @@ class SSDKeras(object):
 
 		return net
 
+	def fine_tuning(self, net):
+
+		self.conv_base.trainable = True
+
+		""" Putting the VGG Net weigths fixed """
+        set_trainable = False
+        for layer in self.conv_base.layers:
+            if layer.name == 'block5_conv1':
+                set_trainable = True
+            if set_trainable:
+                layer.trainable = True
+            else:
+                layer.trainable = False
+
+        net.summary()
+
+        net.compile(
+			optimizer=SGD(lr=self.learning_rate, decay=self.learning_rate_decay),
+			loss=mean_squared_error, 
+			metrics=['mae'])
+
+		return net
+	
 	def build_net(self):
 
 		net = Sequential()
