@@ -103,18 +103,18 @@ class SSDKeras(object):
 		self.conv_base.trainable = True
 
 		""" Putting the VGG Net weigths fixed """
-        set_trainable = False
-        for layer in self.conv_base.layers:
-            if layer.name == 'block5_conv1':
-                set_trainable = True
-            if set_trainable:
-                layer.trainable = True
-            else:
-                layer.trainable = False
-
-        net.summary()
-
-        net.compile(
+		set_trainable = False
+		for layer in self.conv_base.layers:
+			if layer.name == 'block5_conv1':
+				set_trainable = True
+			if set_trainable:
+				layer.trainable = True
+			else:
+				layer.trainable = False
+		
+		net.summary()
+		
+		net.compile(
 			optimizer=SGD(lr=self.learning_rate, decay=self.learning_rate_decay),
 			loss=mean_squared_error, 
 			metrics=['mae'])

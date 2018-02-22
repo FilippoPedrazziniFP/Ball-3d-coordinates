@@ -27,7 +27,7 @@ parser.add_argument('--test', type=bool, default=False, help='if True it skips t
 parser.add_argument('--log_dir', type=str, default='./tensorbaord', help='directory where to store tensorbaord values.')
 
 """ Model parameters """
-parser.add_argument('--epochs', type=int, default=20, help='number of batch iterations.')
+parser.add_argument('--epochs', type=int, default=50, help='number of batch iterations.')
 parser.add_argument('--batch_size', type=int, default=32, help='batch size for the training (number of traces to take).')
 parser.add_argument('--learning_rate_decay', type=float, default=1e-3, help='how to decay the learning rate at each epoch.')
 parser.add_argument('--learning_rate', type=float, default=0.1, help='initial learning rate.')
