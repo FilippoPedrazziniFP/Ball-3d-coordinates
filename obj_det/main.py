@@ -55,7 +55,7 @@ def train_test_model(train_generator, validation_generator, test_generator):
         input_channels=_INPUT_CHANNELS,
         learning_rate=FLAGS.learning_rate,
         learning_rate_decay=FLAGS.learning_rate_decay)
-    net = model.build_vgg_net()
+    net = model.build_smaller_vgg_net()
 
     if FLAGS.restore == True:
         net.load_weights(FLAGS.model_path + ".h5")
@@ -90,7 +90,7 @@ def train_test_model(train_generator, validation_generator, test_generator):
     print('test acc:', test_acc)
     print('test loss:', test_loss)
 
-    net.save(FLAGS.model_path + '.h5')
+    # net.save(FLAGS.model_path + '.h5')
 
     """ Check visually the prediction """
     for x, y in train_generator:

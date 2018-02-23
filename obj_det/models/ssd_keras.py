@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import tensorflow as tf
 import numpy as np
 
-from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.models import Sequential, Model
 from tensorflow.python.keras.layers import Flatten, Dense, Conv2D, MaxPooling2D, GlobalMaxPooling2D
 from tensorflow.python.keras.optimizers import SGD
 from tensorflow.python.keras.losses import mean_squared_error
@@ -105,7 +105,7 @@ class SSDKeras(object):
 		""" Putting the VGG Net weigths fixed """
 		set_trainable = False
 		for layer in self.conv_base.layers:
-			if layer.name == 'block5_conv1':
+			if layer.name == 'block4_conv1':
 				set_trainable = True
 			if set_trainable:
 				layer.trainable = True
@@ -119,6 +119,39 @@ class SSDKeras(object):
 			loss=mean_squared_error, 
 			metrics=['mae'])
 
+		return net
+
+	def build_smaller_vgg_net(self):
+
+		self.conv_base = VGG16(
+				weights='imagenet',
+				include_top=False,
+				input_shape=(self.img_height, self.img_width, self.input_channels)
+				)
+		self.conv_base.summary()
+
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+
+		self.conv_base.summary()
+
+		x = GlobalMaxPooling2D()(self.conv_base.layers[-1].output)
+		x = Flatten()(x)
+		x = Dense(256, activation='relu')(x)
+		x = Dense(self.output_dimension)(x)
+		
+		net = Model(inputs=self.conv_base.input, outputs=x)
+
+		net.summary()
+
+		net.compile(
+			optimizer=SGD(lr=self.learning_rate, decay=self.learning_rate_decay),
+			loss=mean_squared_error, 
+			metrics=['mae'])
+		
 		return net
 	
 	def build_net(self):
