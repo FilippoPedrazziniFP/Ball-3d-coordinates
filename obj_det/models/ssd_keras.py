@@ -145,8 +145,11 @@ class SSDKeras(object):
 		
 		net = Model(inputs=self.conv_base.input, outputs=x)
 
-		net.summary()
+		""" Putting the VGG Net weigths fixed """
+		self.conv_base.trainable = False
 
+		net.summary()
+		
 		net.compile(
 			optimizer=SGD(lr=self.learning_rate, decay=self.learning_rate_decay),
 			loss=mean_squared_error, 
