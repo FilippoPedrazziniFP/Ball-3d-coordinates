@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser()
 """ General Parameters """
 parser.add_argument('--model_path', type=str, default='./model/ssd_vgg_fixed', help='model checkpoints directory.')
 parser.add_argument('--restore', type=bool, default=False, help='if True restore the model from --model_path.')
-parser.add_argument('--fine_tuning', type=bool, default=True, help='if True unlocks some layers for tuning.')
+parser.add_argument('--fine_tuning', type=bool, default=False, help='if True unlocks some layers for tuning.')
 parser.add_argument('--test', type=bool, default=False, help='if True it skips the training process and goes directly to test.')
 parser.add_argument('--log_dir', type=str, default='./tensorbaord', help='directory where to store tensorbaord values.')
 
@@ -55,7 +55,8 @@ def train_test_model(train_generator, validation_generator, test_generator):
         input_channels=_INPUT_CHANNELS,
         learning_rate=FLAGS.learning_rate,
         learning_rate_decay=FLAGS.learning_rate_decay)
-    net = model.build_smaller_vgg_net()
+    net = model.build_net()
+    exit()
 
     if FLAGS.restore == True:
         net.load_weights(FLAGS.model_path + ".h5")

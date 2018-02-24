@@ -186,9 +186,13 @@ class SSDKeras(object):
 
 		net = Sequential()
 
-		net.add(Conv2D(16, (5, 5), activation='relu', 
+		net.add(Conv2D(32, (5, 5), activation='relu', strides=(2,2),
 			input_shape=(self.img_height, self.img_width, self.input_channels)))
-		net.add(MaxPooling2D((4, 4)))		
+		net.add(Conv2D(64, (5, 5), activation='relu', strides=(2,2)))
+		net.add(Conv2D(128, (5, 5), activation='relu', strides=(2,2)))	
+		
+		net.add(GlobalMaxPooling2D())	
+		
 		net.add(Flatten())
 		net.add(Dense(128, activation='relu'))
 		net.add(Dense(self.output_dimension))
