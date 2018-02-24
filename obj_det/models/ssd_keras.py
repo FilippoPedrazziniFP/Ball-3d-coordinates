@@ -100,12 +100,10 @@ class SSDKeras(object):
 
 	def fine_tuning(self, net):
 
-		self.conv_base.trainable = True
-
 		""" Putting the VGG Net weigths fixed """
 		set_trainable = False
-		for layer in self.conv_base.layers:
-			if layer.name == 'block4_conv1':
+		for layer in net.layers:
+			if layer.name == 'block1_conv1':
 				set_trainable = True
 			if set_trainable:
 				layer.trainable = True
@@ -130,10 +128,30 @@ class SSDKeras(object):
 				)
 		self.conv_base.summary()
 
+		# Block 2
 		self.conv_base.layers.pop()
 		self.conv_base.layers.pop()
 		self.conv_base.layers.pop()
 		self.conv_base.layers.pop()
+
+		# Block 3
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+
+		# Block 4
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		
+		# Block 5
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		self.conv_base.layers.pop()
+		
 		self.conv_base.layers.pop()
 
 		self.conv_base.summary()
@@ -146,7 +164,14 @@ class SSDKeras(object):
 		net = Model(inputs=self.conv_base.input, outputs=x)
 
 		""" Putting the VGG Net weigths fixed """
-		self.conv_base.trainable = False
+		set_trainable = False
+		for layer in net.layers:
+			if layer.name == 'flatten_1':
+				set_trainable = True
+			if set_trainable:
+				layer.trainable = True
+			else:
+				layer.trainable = False
 
 		net.summary()
 		
