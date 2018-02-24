@@ -183,7 +183,8 @@ class SSDKeras(object):
 		return net
 	
 	def build_net(self):
-
+		""" If the network is so small and it can learn without problems,
+			it means that I can make the ball smaller in the Unity world """
 		net = Sequential()
 
 		net.add(Conv2D(32, (5, 5), activation='relu', strides=(2,2),
@@ -201,7 +202,7 @@ class SSDKeras(object):
 
 		net.compile(
 			optimizer=SGD(lr=self.learning_rate, decay=self.learning_rate_decay),
-			loss=SSDKeras.root_mean_squared_error, 
+			loss=mean_squared_error, 
 			metrics=['mae'])
 
 		return net

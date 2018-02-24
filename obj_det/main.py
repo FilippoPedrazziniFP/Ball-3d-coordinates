@@ -29,7 +29,7 @@ parser.add_argument('--log_dir', type=str, default='./tensorbaord', help='direct
 """ Model parameters """
 parser.add_argument('--epochs', type=int, default=100, help='number of batch iterations.')
 parser.add_argument('--batch_size', type=int, default=32, help='batch size for the training (number of traces to take).')
-parser.add_argument('--learning_rate_decay', type=float, default=1e-3, help='how to decay the learning rate at each epoch.')
+parser.add_argument('--learning_rate_decay', type=float, default=1e-8, help='how to decay the learning rate at each epoch.')
 parser.add_argument('--learning_rate', type=float, default=0.1, help='initial learning rate.')
 parser.add_argument('--number_of_samples', type=int, default=10, help='how many videos in the folder you want to use to train the model.')
 
@@ -56,7 +56,6 @@ def train_test_model(train_generator, validation_generator, test_generator):
         learning_rate=FLAGS.learning_rate,
         learning_rate_decay=FLAGS.learning_rate_decay)
     net = model.build_net()
-    exit()
 
     if FLAGS.restore == True:
         net.load_weights(FLAGS.model_path + ".h5")
