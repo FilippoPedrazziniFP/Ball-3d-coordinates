@@ -6,7 +6,7 @@ import numpy as np
 from tensorflow.python.keras.models import Sequential, Model
 from tensorflow.python.keras.layers import Flatten, Dense, Conv2D, MaxPooling2D, GlobalMaxPooling2D
 from tensorflow.python.keras.optimizers import SGD
-from tensorflow.python.keras.losses import mean_squared_error
+from tensorflow.python.keras.losses import mean_squared_error, mean_absolute_error
 from tensorflow.python.keras.regularizers import l2
 from tensorflow.python.keras.applications import VGG16
 from tensorflow.python.keras import backend as K
@@ -103,7 +103,7 @@ class SSDKeras(object):
 		""" Putting the VGG Net weigths fixed """
 		set_trainable = False
 		for layer in net.layers:
-			if layer.name == 'block1_conv1':
+			if layer.name == 'block5_conv1':
 				set_trainable = True
 			if set_trainable:
 				layer.trainable = True
