@@ -56,6 +56,7 @@ def train_test_model(train_generator, validation_generator, test_generator):
         learning_rate=FLAGS.learning_rate,
         learning_rate_decay=FLAGS.learning_rate_decay)
     net = model.build_net()
+    exit()
 
     if FLAGS.restore == True:
         net.load_weights(FLAGS.model_path + ".h5")

@@ -13,7 +13,7 @@ from tensorflow.python.keras import backend as K
 
 _HIDDEN_SIZE = 256
 _FILTERS = 64
-_CLASSES = 2
+_CLASSES = 3
 
 class SSDKeras(object):
 	""" The model tries to predict the 2D position of the ball in the image. """
@@ -21,7 +21,7 @@ class SSDKeras(object):
 			img_height=None,
 			img_width=None,
 			input_channels=None,
-			output_dimension=2,
+			output_dimension=3,
 			learning_rate=2e-5,
 			learning_rate_decay=1e-10):
 		super(SSDKeras, self).__init__()

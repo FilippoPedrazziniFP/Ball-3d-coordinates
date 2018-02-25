@@ -42,12 +42,12 @@ class Preprocessing(object):
 	def get_labels(number_of_samples, img_height, img_width, input_channels):
 		features = pd.read_csv(_DATA_PATH + _METADATA_PATH, header = None, sep=',')
 		features.columns = ["frame_index", "x", "y", "z", "relative_x", "relative_y", "size", "traj"]
-		labels = features[["relative_x", "relative_y"]]
-		print(labels.values[0])
+		labels = features[["relative_x", "relative_y", "size"]]
 		""" Standardize features """
 		labels['relative_x'] = labels['relative_x'].apply(lambda x: x / img_width)
 		labels['relative_y'] = labels['relative_y'].apply(lambda x: x / img_height)
-		# labels['size'] = labels['size'].apply(lambda x: x / img_height)
+		max_size = labels['size'].max()
+		labels['size'] = labels['size'].apply(lambda x: x / max_size)
 		return labels.values[0:number_of_samples]
 
 	@staticmethod
