@@ -1,0 +1,1 @@
+docker run -it -p 8888:8888 -p 6006:6006 -v ${1:-$(pwd)/}:/root/project ${1:-filippopedra/compvision:cpu}

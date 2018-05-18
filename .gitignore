@@ -1,4 +1,6 @@
-.DS_Store
+*.DS_Store
+*.DS_STORE
+*/data/
 project/tensorboard/
 
 # Byte-compiled / optimized / DLL files
@@ -111,3 +113,4 @@ ENV/
 
 # mypy
 .mypy_cache/
+*.h5
