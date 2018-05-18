@@ -13,4 +13,7 @@ class Visualizer(object):
 
 		print(X.describe())
 
+		print("Last Features of the Dataset")
+		print(X.tail(5))
+
 		return

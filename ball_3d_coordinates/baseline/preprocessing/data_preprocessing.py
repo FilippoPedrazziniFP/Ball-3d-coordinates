@@ -89,7 +89,7 @@ class BaselinePreprocessor(object):
 
 		return data_x, data_y
 
-	def train_test_validation_split(self, features, labels, val_samples=10, test_samples=50):
+	def train_test_validation_split(self, features, labels, val_samples=100, test_samples=200):
 
 		X_test = features[0:test_samples]
 		y_test = labels[0:test_samples]

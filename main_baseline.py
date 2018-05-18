@@ -1,3 +1,5 @@
+### Main file for the baseline training and prediction.
+
 import argparse
 import shutil
 import numpy as np

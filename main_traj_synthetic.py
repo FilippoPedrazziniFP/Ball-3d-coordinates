@@ -1,3 +1,5 @@
+### Main file for the training/predition of the LSTM and Temporal net over the trajectories dataset.
+
 import argparse
 import shutil
 import numpy as np

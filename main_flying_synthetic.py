@@ -1,3 +1,5 @@
+### Main file for the training/prediction of the Temporal net over the classification task
+
 import argparse
 import shutil
 import numpy as np

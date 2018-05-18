@@ -1,3 +1,5 @@
+### Main file for the training/prediction of the Temporal Net over the synthetic more general dataset
+
 import argparse
 import shutil
 import numpy as np

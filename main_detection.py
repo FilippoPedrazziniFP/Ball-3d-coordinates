@@ -1,3 +1,5 @@
+#### Main file for the training/predcition of the Image net
+
 import argparse
 import shutil
 import numpy as np
