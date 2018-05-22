@@ -26,9 +26,9 @@ class ConvPreprocessor(object):
 		# Generate the Data
 		X, y = self.generate_data(X, y)
 
-		print(X.shape)
-		print(y.shape)
-
+		# Reshaping the Label 
+		y = np.squeeze(y)
+		
 		# Train, test, validation split
 		X_train, X_test, X_val, y_train, y_test, y_val = self.train_test_validation_split(X, y)
 
@@ -52,7 +52,7 @@ class ConvPreprocessor(object):
 		features /= 255.0
 		return features
 
-	def train_test_validation_split(self, features, labels, val_samples=10, test_samples=10):
+	def train_test_validation_split(self, features, labels, val_samples=50, test_samples=100):
 
 		X_test = features[0:test_samples]
 		y_test = labels[0:test_samples]
@@ -68,7 +68,7 @@ class ConvPreprocessor(object):
 	def generate_data(self, features, labels):
 		data_x = []
 		data_y = []
-		for i in range(0, len(features)-1):
+		for i in range(0, len(features)):
 			initial_idx = randint(0, len(features)-self.input_trace-1)
 			x = features[initial_idx:initial_idx+self.input_trace,:]
 			y = labels[initial_idx+int(self.input_trace/2):initial_idx+int(self.input_trace/2)+1,:]

@@ -27,15 +27,16 @@ parser.add_argument('--create_df', type=bool, default=False,
 """ Model Parametes """
 parser.add_argument('--log_dir', type=str, default='./tensorbaord', 
     help='directory where to store tensorbaord values.')
-parser.add_argument('--model_path', type=str, default='./ball_3d_coordinates/obj_detection/weights/img_net', 
+parser.add_argument('--model_path', type=str, 
+    default='./ball_3d_coordinates/obj_detection/weights/img_net', 
     help='model checkpoints directory.')
 parser.add_argument('--epochs', type=int, default=1000, 
     help='number of batch iterations.')
-parser.add_argument('--batch_size', type=int, default=32, 
+parser.add_argument('--batch_size', type=int, default=1, 
     help='number of samples in the training batch.')
 parser.add_argument('--input_trace', type=int, default=25, 
     help='length of the sequence.')
-parser.add_argument('--number_of_samples', type=int, default=40, 
+parser.add_argument('--number_of_samples', type=int, default=10, 
     help='how many frames you want to load for the prediction using the convnet.')
 
 args = parser.parse_args()
@@ -72,12 +73,11 @@ def main():
     # Define the Model
     model = ConvNet(
         batch_size=args.batch_size,
+        input_trace=args.input_trace,
         epochs=args.epochs,
         log_dir=args.log_dir,
         model_path=args.model_path
         )
-
-    exit()
 
     # Restore the model
     if args.restore == True:

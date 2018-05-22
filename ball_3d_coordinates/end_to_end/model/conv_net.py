@@ -11,11 +11,12 @@ import ball_3d_coordinates.util.util as util
 from ball_3d_coordinates.obj_detection.preprocessing.conv_debugging import ConvDebugger
 
 class ConvNet(object):
-    def __init__(self, batch_size, epochs, 
+    def __init__(self, batch_size, epochs, input_trace,
             log_dir=None, model_path=None):
         super(ConvNet, self).__init__()
         self.batch_size = batch_size
         self.epochs = epochs
+        self.input_trace = input_trace
         self.log_dir = log_dir
         self.model_path = model_path
         self.model = self.build_model()
@@ -27,17 +28,18 @@ class ConvNet(object):
 
     def build_model(self):
 
-        input_net = Input(shape=(util.IMG_HEIGHT, util.IMG_WIDTH, util.INPUT_CHANNELS))
-        x = Conv3D(16, (3, 3), padding="valid", strides=(2,2))(input_net)
+        input_net = Input(shape=(self.input_trace, util.IMG_HEIGHT, 
+            util.IMG_WIDTH, util.INPUT_CHANNELS))
+        x = Conv3D(16, (1, 3, 3), padding="valid", strides=(1,2,2))(input_net)
         x = Activation('relu')(x)
         
-        x = Conv3D(16, (3, 3), padding="valid", strides=(2,2))(x)
+        x = Conv3D(16, (1, 3, 3), padding="valid", strides=(1,2,2))(x)
         x = Activation('relu')(x)
         
-        x = Conv3D(32, (3, 3), padding="valid", strides=(2,2))(x)
+        x = Conv3D(32, (1, 3, 3), padding="valid", strides=(1,2,2))(x)
         x = Activation('relu')(x)
         
-        x = Conv3D(32, (3, 3), padding="valid", strides=(2,2))(x)
+        x = Conv3D(32, (25, 3, 3), padding="valid", strides=(1,2,2))(x)
         x = Activation('relu')(x)
         
         x = Flatten()(x)
@@ -96,9 +98,11 @@ class ConvNet(object):
 
     def restore(self):
         
-        self.model.load_weights(self.model_path + ".h5")
-        print("Loaded model from disk")
-        
+        try:
+            self.model.load_weights(self.model_path + ".h5")
+            print("Loaded model from disk")
+        except OSError:
+            pass
         return
 
     def debug(self, X_test, y_test):

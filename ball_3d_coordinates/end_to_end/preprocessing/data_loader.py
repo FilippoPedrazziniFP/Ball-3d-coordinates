@@ -26,8 +26,11 @@ class Loader(object):
 
 	def get_features(self):
 		images_list = sorted(glob.glob(util.GEN_DATA_PATH + '*.png'))
+		return images_list[0:self.number_of_samples]
+	
+	def get_images(self, images_list):
 		features = []
-		for file_image in images_list[0:self.number_of_samples]:
+		for file_image in images_list:
 			img = cv2.imread(file_image, 1)
 			features.append(img)
 		return np.asarray(features)
