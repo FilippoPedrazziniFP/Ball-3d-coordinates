@@ -31,13 +31,13 @@ parser.add_argument('--log_dir', type=str, default='./tensorbaord',
 parser.add_argument('--model_path', type=str, 
     default='./ball_3d_coordinates/end_to_end/weights/img_net', 
     help='model checkpoints directory.')
-parser.add_argument('--epochs', type=int, default=1000, 
+parser.add_argument('--epochs', type=int, default=50, 
     help='number of batch iterations.')
-parser.add_argument('--batch_size', type=int, default=1, 
+parser.add_argument('--batch_size', type=int, default=2, 
     help='number of samples in the training batch.')
 parser.add_argument('--input_trace', type=int, default=25, 
     help='length of the sequence.')
-parser.add_argument('--number_of_samples', type=int, default=200, 
+parser.add_argument('--number_of_samples', type=int, default=4000, 
     help='how many frames you want to load for the prediction using the convnet.')
 
 args = parser.parse_args()
@@ -82,7 +82,7 @@ def main():
     # Get Validation data
     X_val = loader.get_image_features(X_val)
 
-    batch_memory_dimension = 1
+    batch_memory_dimension = 50
     for i in range(0, len(X_train)-batch_memory_dimension, batch_memory_dimension):
         
         # Get data

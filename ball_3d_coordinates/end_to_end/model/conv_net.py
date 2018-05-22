@@ -51,7 +51,7 @@ class ConvNet(object):
 
         model.compile(
             optimizer=Adam(lr=0.001),
-            loss=mean_squared_error, 
+            loss=ConvNet.root_mean_squared_error, 
             metrics=['mae'])
 
         return model
