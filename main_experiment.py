@@ -3,6 +3,7 @@
 import argparse
 import shutil
 import numpy as np
+import cv2
 
 from ball_3d_coordinates.end_to_end.preprocessing.data_preprocessing import ConvPreprocessor
 from ball_3d_coordinates.end_to_end.preprocessing.data_loader import Loader
@@ -28,7 +29,7 @@ parser.add_argument('--create_df', type=bool, default=False,
 parser.add_argument('--log_dir', type=str, default='./tensorbaord', 
     help='directory where to store tensorbaord values.')
 parser.add_argument('--model_path', type=str, 
-    default='./ball_3d_coordinates/obj_detection/weights/img_net', 
+    default='./ball_3d_coordinates/end_to_end/weights/img_net', 
     help='model checkpoints directory.')
 parser.add_argument('--epochs', type=int, default=1000, 
     help='number of batch iterations.')
@@ -36,7 +37,7 @@ parser.add_argument('--batch_size', type=int, default=1,
     help='number of samples in the training batch.')
 parser.add_argument('--input_trace', type=int, default=25, 
     help='length of the sequence.')
-parser.add_argument('--number_of_samples', type=int, default=10, 
+parser.add_argument('--number_of_samples', type=int, default=200, 
     help='how many frames you want to load for the prediction using the convnet.')
 
 args = parser.parse_args()
@@ -64,7 +65,6 @@ def main():
 
     # Visulize the Labels DF
     print(y.describe())
-    print(X.shape)
 
     # Preprocess the data
     preprocessor = ConvPreprocessor(MAX_X, MAX_Y, MAX_Z, args.input_trace)
@@ -79,13 +79,26 @@ def main():
         model_path=args.model_path
         )
 
-    # Restore the model
-    if args.restore == True:
-        model.restore()
+    # Get Validation data
+    X_val = loader.get_image_features(X_val)
 
-    # Train the model
-    if args.train == True:
-        history = model.fit(X_train, y_train, X_test, y_test)
+    batch_memory_dimension = 1
+    for i in range(0, len(X_train)-batch_memory_dimension, batch_memory_dimension):
+        
+        # Get data
+        X = loader.get_image_features(X_train[i:i+batch_memory_dimension])
+        y = y_train[i:i+batch_memory_dimension,:]
+
+        # Preprocess Images
+        X = preprocessor.preprocess_images(X)
+
+        # Restore the model
+        if args.restore == True:
+            model.restore()
+
+        # Train the model
+        if args.train == True:
+            history = model.fit(X, y, X_val, y_val)
 
     # Tune the model
     if args.tune == True:

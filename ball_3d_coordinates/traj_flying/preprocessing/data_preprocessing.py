@@ -48,7 +48,7 @@ class TmpPreprocessor(object):
 	def generate_data(self, features, labels):
 		data_x = []
 		data_y = []
-		for i in range(0, len(features)-1):
+		for i in range(0, len(features)-25):
 			initial_idx = randint(0, len(features)-self.input_trace-1)
 			x = features[initial_idx:initial_idx+self.input_trace,:]
 			y = labels[initial_idx+int(self.input_trace/2):initial_idx+int(self.input_trace/2)+1,:]

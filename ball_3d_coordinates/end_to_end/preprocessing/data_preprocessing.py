@@ -17,9 +17,6 @@ class ConvPreprocessor(object):
 
 	def fit_transform(self, X, y):
 
-		# Rescale the features /255
-		X = self.rescale_features(X)
-
 		# Rescale labels /IMG_DIM and transform it into a numpy array
 		y = self.rescale_labels(y)
 
@@ -33,6 +30,13 @@ class ConvPreprocessor(object):
 		X_train, X_test, X_val, y_train, y_test, y_val = self.train_test_validation_split(X, y)
 
 		return X_train, y_train, X_test, y_test, X_val, y_val
+
+	def preprocess_images(self, X):
+
+		# Rescale the images /255
+		X = self.rescale_features(X)
+
+		return X
 
 	def transform(self, X):
 
@@ -52,7 +56,7 @@ class ConvPreprocessor(object):
 		features /= 255.0
 		return features
 
-	def train_test_validation_split(self, features, labels, val_samples=50, test_samples=100):
+	def train_test_validation_split(self, features, labels, val_samples=25, test_samples=50):
 
 		X_test = features[0:test_samples]
 		y_test = labels[0:test_samples]
@@ -68,9 +72,9 @@ class ConvPreprocessor(object):
 	def generate_data(self, features, labels):
 		data_x = []
 		data_y = []
-		for i in range(0, len(features)):
+		for i in range(0, len(features)-self.input_trace):
 			initial_idx = randint(0, len(features)-self.input_trace-1)
-			x = features[initial_idx:initial_idx+self.input_trace,:]
+			x = features[initial_idx:initial_idx+self.input_trace]
 			y = labels[initial_idx+int(self.input_trace/2):initial_idx+int(self.input_trace/2)+1,:]
 			data_x.append(x)
 			data_y.append(y)
