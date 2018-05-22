@@ -101,7 +101,6 @@ class ParabolaModel(object):
         x = self.initial_x + self.v_x * t
         y = self.initial_y + self.v_y * t + 0.5 * self.g * (t ** 2)
         z = self.initial_z + self.v_z * t
-        print(x)
         out = [x, y, z]
         return out
 

@@ -19,7 +19,7 @@ class BaselinePreprocessor(object):
 		data = self.filtering_noisy_samples(data.values)
 
 		# Get list of indexes
-		train_list_complete, train_list = self.get_indexes_list(data)
+		train_list = self.get_indexes_list(data)
 
 		# Splitting the data into features and labels
 		X, y = self.features_labels_split(data)
@@ -29,24 +29,16 @@ class BaselinePreprocessor(object):
 			X = self.apply_noise(X)
 
 		# Generate the sequences
-		X, y = self.generate_data(X, y, train_list_complete, train_list)
+		X, y = self.generate_data(X, y, train_list)
 
-		# Train, test, validation split
-		X_train, y_train, X_test, y_test, X_val, y_val = self.train_test_validation_split(X, y)
-
-		return X_train, y_train, X_test, y_test, X_val, y_val
+		return X[0:200], y[0:200]
 
 	def get_indexes_list(self, data):
 		train_list = []
 		for i in range(0, len(data)):
 			if data[i][2] != data[i-1][2] and i != 0:
 				train_list.append(i-1)
-
-		train_list_complete = []
-		for idx in train_list:
-			train_list_complete.append(np.arange(idx-self.input_trace + 1, idx + 1))
-		train_list_complete = np.asarray(train_list_complete).flatten()
-		return train_list_complete, train_list
+		return train_list
 
 	def filtering_noisy_samples(self, data):
 		data_proc = []
@@ -64,43 +56,21 @@ class BaselinePreprocessor(object):
 		labels = data[:,3:]
 		return features, labels
 
-	def standardize_features(self, features):
-		sc = StandardScaler().fit(features)
-		features = sc.transform(features)
-		return features
-
-	def generate_data(self, features, labels, train_list_complete, train_list):
+	def generate_data(self, features, labels, train_list):
 		data_x = []
 		data_y = []
 		for i in range(0, len(train_list)-1):
-			for k in range(0, 10):
-				initial_idx = randint(train_list[i], train_list[i+1])
-				while initial_idx in train_list_complete:
-					initial_idx = randint(train_list[i], train_list[i+1])
+			initial_idx = train_list[i]
+			x = features[initial_idx:initial_idx+self.input_trace,:]
+			y = labels[initial_idx+int(self.input_trace/2):initial_idx+int(self.input_trace/2)+1,:]
 
-				x = features[initial_idx:initial_idx+self.input_trace,:]
-				y = labels[initial_idx+int(self.input_trace/2):initial_idx+int(self.input_trace/2)+1,:]
-
-				data_x.append(x)
-				data_y.append(y)
+			data_x.append(x)
+			data_y.append(y)
 
 		data_x = np.asarray(data_x)
 		data_y = np.asarray(data_y)
 
 		return data_x, data_y
-
-	def train_test_validation_split(self, features, labels, val_samples=100, test_samples=200):
-
-		X_test = features[0:test_samples]
-		y_test = labels[0:test_samples]
-
-		X_val = features[test_samples:test_samples + val_samples]
-		y_val = labels[test_samples:test_samples + val_samples]
-
-		X_train = features[test_samples + val_samples:]
-		y_train = labels[test_samples + val_samples:]
-		
-		return X_train, y_train, X_test, y_test, X_val, y_val
 
 	def apply_noise(self, features, mean=0.0, std_dev_size=2.5, std_dev_x_y=3.0):
 

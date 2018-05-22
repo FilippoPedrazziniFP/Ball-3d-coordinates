@@ -29,7 +29,7 @@ def main():
 
     # Preprocess the data
     preprocessor = BaselinePreprocessor(input_trace=args.input_trace)
-    X_train, y_train, X_test, y_test, X_val, y_val = preprocessor.fit_transform(X, y, noise=args.noise)
+    X_test, y_test = preprocessor.fit_transform(X, y, noise=args.noise)
 
     # Define the Model
     model = ParabolaModel(camera_parameters)
