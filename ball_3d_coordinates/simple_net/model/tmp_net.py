@@ -1,26 +1,24 @@
 from itertools import product
 from tensorflow.python.keras.callbacks import ModelCheckpoint, TensorBoard
-from tensorflow.python.keras import backend as K
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import TimeDistributed, Conv1D, Dense
 from tensorflow.python.keras.optimizers import Adam
-from tensorflow.python.keras.layers import Input, Conv2D, Conv3D, Activation, Dense, Flatten
-from tensorflow.python.keras.models import Model
+from tensorflow.python.keras import backend as K
 from tensorflow.python.keras.losses import mean_squared_error
 from sklearn.model_selection import KFold
 
 import ball_3d_coordinates.util.util as util
-from ball_3d_coordinates.obj_detection.preprocessing.conv_debugging import ConvDebugger
 
-class ConvNet(object):
-    def __init__(self, batch_size, epochs, input_trace,
+class SimpleNet(object):
+    def __init__(self, batch_size, epochs, 
             log_dir=None, model_path=None):
-        super(ConvNet, self).__init__()
+        super(SimpleNet, self).__init__()
         self.batch_size = batch_size
         self.epochs = epochs
-        self.input_trace = input_trace
         self.log_dir = log_dir
         self.model_path = model_path
-        self.model = self.build_model()
         self.checkpointers = self.build_checkpointers()
+        self.model = self.build_model()
 
     @staticmethod
     def root_mean_squared_error(y_true, y_pred):
@@ -28,34 +26,15 @@ class ConvNet(object):
 
     def build_model(self):
 
-        input_net = Input(shape=(self.input_trace, util.IMG_HEIGHT, 
-            util.IMG_WIDTH, util.INPUT_CHANNELS))
-        x = Conv3D(16, (7, 3, 3), padding="valid", strides=(1,2,2))(input_net)
-        x = Activation('relu')(x)
-        
-        x = Conv3D(16, (7, 3, 3), padding="valid", strides=(1,2,2))(x)
-        x = Activation('relu')(x)
-        
-        x = Conv3D(32, (7, 3, 3), padding="valid", strides=(1,2,2))(x)
-        x = Activation('relu')(x)
-        
-        x = Conv3D(32, (7, 3, 3), padding="valid", strides=(1,2,2))(x)
-        x = Activation('relu')(x)
-        
-        # x = Conv3D(64, (25, 1, 1), padding="valid", strides=(1,1,1))(x)
-        # x = Activation('relu')(x)
-        
-        x = Flatten()(x)
-        #x = Dense(1024, activation='relu')(x)
-        x = Dense(512, activation='relu')(x)
-        x = Dense(3)(x)
+        model = Sequential()
 
-        model = Model(inputs=input_net, outputs=x)
+        model.add(Dense(128, activation='relu', input_shape=(3,)))
+        model.add(Dense(3))
         model.summary()
 
         model.compile(
-            optimizer=Adam(lr=0.001),
-            loss=ConvNet.root_mean_squared_error, 
+            optimizer=Adam(),
+            loss=SimpleNet.root_mean_squared_error, 
             metrics=['mae'])
 
         return model
@@ -66,7 +45,7 @@ class ConvNet(object):
 
         if self.model_path is not None:
             checkpointer = ModelCheckpoint(filepath=self.model_path + '.h5', 
-                monitor='val_loss', verbose=1, save_best_only=False, period=10)
+                monitor='val_loss', verbose=1, save_best_only=True, period=10)
             checkpointers.append(checkpointer)
         
         if self.log_dir is not None:
@@ -101,32 +80,15 @@ class ConvNet(object):
         return y_pred
 
     def restore(self):
-        
         try:
             self.model.load_weights(self.model_path + ".h5")
             print("Loaded model from disk")
-        except OSError:
-            pass
-        except ValueError:
-            pass
-        return
-
-    def debug(self, X_test, y_test):
-        
-        debugger = ConvDebugger(self.model)
-        # Check activated image 
-        debugger.fit(X_test, y_test)
-        # Check test prediction
-        # debugger.check_predictions(X_test, y_test)
-        
-        return
-
-    def create_df(self, X):
-        predictions = self.model.predict(X)
-        df = pd.DataFrame(predictions, columns=["relative_x", "relative_y", "size"])
-        df.to_csv('features.csv', sep=',')
-        print("Created file...")
-        
+        except OSError as e:
+            print("Model not loaded... for: ", e)
+        except TypeError as e:
+            print("Model not loaded... for: ", e)
+        except ValueError as e:
+            print("Model not loaded... for: ", e)
         return
     
     def tune(self, X_train, y_train):
@@ -168,3 +130,5 @@ class ConvNet(object):
         for line in results:
             print("LR: %s, DECAY: %s, LOSS: %s, VAL_LOSS: %s" %(line[0], line[1], line[2], line[3]))   
         return
+
+		

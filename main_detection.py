@@ -3,6 +3,7 @@
 import argparse
 import shutil
 import numpy as np
+import time
 
 from ball_3d_coordinates.obj_detection.preprocessing.data_preprocessing import ConvPreprocessor
 from ball_3d_coordinates.obj_detection.preprocessing.data_loader import Loader
@@ -11,7 +12,7 @@ from ball_3d_coordinates.obj_detection.model.conv_net import ConvNet
 parser = argparse.ArgumentParser()
 
 """ General Parameters """
-parser.add_argument('--debug', type=bool, default=True, 
+parser.add_argument('--debug', type=bool, default=False, 
     help='if True debug the model.')
 parser.add_argument('--restore', type=bool, default=True, 
     help='if True restore the model from --model_path.')
@@ -33,9 +34,9 @@ parser.add_argument('--epochs', type=int, default=1000,
     help='number of batch iterations.')
 parser.add_argument('--batch_size', type=int, default=32, 
     help='number of samples in the training batch.')
-parser.add_argument('--number_of_samples', type=int, default=50, 
+parser.add_argument('--number_of_samples', type=int, default=200, 
     help='how many frames you want to load for the prediction using the convnet.')
-parser.add_argument('--number_of_samples_train', type=int, default=50, 
+parser.add_argument('--number_of_samples_train', type=int, default=100, 
     help='how many frames you want to use for training.')
 
 args = parser.parse_args()
@@ -87,6 +88,12 @@ def main():
     # Debug the model
     if args.debug == True:
         model.debug(X_test, y_test)
+    
+    # Measuring Prediction Time
+    sample = np.reshape(X_train[0], (1, 814, 1360, 3))
+    start = time.clock()
+    model.predict(sample)
+    print(time.clock() - start)
 
     # Create the DF for the next model
     if args.create_df == True:

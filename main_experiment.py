@@ -8,6 +8,7 @@ import cv2
 from ball_3d_coordinates.end_to_end.preprocessing.data_preprocessing import ConvPreprocessor
 from ball_3d_coordinates.end_to_end.preprocessing.data_loader import Loader
 from ball_3d_coordinates.end_to_end.model.conv_net import ConvNet
+from ball_3d_coordinates.end_to_end.model.conv_lstm_net import ConvLSTMNet
 
 parser = argparse.ArgumentParser()
 
@@ -31,13 +32,13 @@ parser.add_argument('--log_dir', type=str, default='./tensorbaord',
 parser.add_argument('--model_path', type=str, 
     default='./ball_3d_coordinates/end_to_end/weights/img_net', 
     help='model checkpoints directory.')
-parser.add_argument('--epochs', type=int, default=50, 
+parser.add_argument('--epochs', type=int, default=500, 
     help='number of batch iterations.')
-parser.add_argument('--batch_size', type=int, default=2, 
+parser.add_argument('--batch_size', type=int, default=1, 
     help='number of samples in the training batch.')
-parser.add_argument('--input_trace', type=int, default=25, 
+parser.add_argument('--input_trace', type=int, default=15, 
     help='length of the sequence.')
-parser.add_argument('--number_of_samples', type=int, default=4000, 
+parser.add_argument('--number_of_samples', type=int, default=200, 
     help='how many frames you want to load for the prediction using the convnet.')
 
 args = parser.parse_args()
@@ -70,8 +71,9 @@ def main():
     preprocessor = ConvPreprocessor(MAX_X, MAX_Y, MAX_Z, args.input_trace)
     X_train, y_train, X_test, y_test, X_val, y_val = preprocessor.fit_transform(X, y)
 
+    print(X_train.shape)
     # Define the Model
-    model = ConvNet(
+    model = ConvLSTMNet(
         batch_size=args.batch_size,
         input_trace=args.input_trace,
         epochs=args.epochs,
@@ -81,6 +83,7 @@ def main():
 
     # Get Validation data
     X_val = loader.get_image_features(X_val)
+    X_val = preprocessor.preprocess_images(X_val)
 
     batch_memory_dimension = 50
     for i in range(0, len(X_train)-batch_memory_dimension, batch_memory_dimension):

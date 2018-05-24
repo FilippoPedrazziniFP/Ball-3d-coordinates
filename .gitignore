@@ -15,7 +15,7 @@ __pycache__/
 data/
 baseline/tensorboard/
 flying/tensorboard/
-tensorboard/
+*tensorboard/
 .sublime-project
 .sublime-workspace
 thesis.sublime-workspace

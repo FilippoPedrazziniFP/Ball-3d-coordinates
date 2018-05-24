@@ -32,17 +32,14 @@ class ConvPreprocessor(object):
 		return X_train, y_train, X_test, y_test, X_val, y_val
 
 	def preprocess_images(self, X):
-
 		# Rescale the images /255
-		X = self.rescale_features(X)
-
+		# X = self.rescale_features(X)
+		X = self.normalize_features(X)
 		return X
 
 	def transform(self, X):
-
 		# Rescale the features for the prediction
 		X = self.rescale_features(X)
-
 		return X
 
 	def rescale_labels(self, labels):
@@ -54,6 +51,12 @@ class ConvPreprocessor(object):
 	def rescale_features(self, features):
 		features = features.astype('float32')
 		features /= 255.0
+		return features
+	
+	def normalize_features(self, features):
+		features = features.astype('float32')
+		features -= features.mean(axis=0)
+		features /= features.std(axis=0)
 		return features
 
 	def train_test_validation_split(self, features, labels, val_samples=25, test_samples=50):
